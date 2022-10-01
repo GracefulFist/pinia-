@@ -73,5 +73,35 @@ export const useCounter = defineStore('counter', () => {
 在项目中引用 store 实例：
 
 ```js
+import { useCounterStore } from '/src/store/index.js'
+
+// 这时你会发现，defineStore() 的返回值是一个函数
+const store = useCounterStore()
+
+console.log(store.count)
+// 调用 store中的 actions 中的方法
+store.increment()
+console.log(store.count, store.name)
 ```
 
+注意：当我们 store 一旦具体化的时候，我们就可以直接访问它的 state 、getters 、actions。我们可以通过：
+
+```js
+store.xxx 的方式进行访问
+// 不能使用解构的语法，这样得到的数据会失去响应式，因为 store 是被 reactive() 包裹的一个对象
+const { count , name } = store
+```
+
+ 但如果你只想使用 store 中的 state 的话，使用 解构 语法的话，这时可以借助函数 storeToRefs() 。这样的话我们就可以只使用 state 中的变量了。
+
+```js
+import { useCounterStore } from '/src/store/index.js'
+import { storeToRefs } from 'pinia'
+
+const store = useCounterStore()
+// 这时 count 为 ref() 包裹起来的对象，使用xxx.value
+const { count } = storeToRefs(store)
+console.log(count, count.value)
+```
+
+ 

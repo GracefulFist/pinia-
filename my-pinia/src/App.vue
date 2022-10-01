@@ -4,9 +4,12 @@
 
 <script setup>
 import {} from 'vue'
-import {useCounterStore} from '@/store/index.js'
+import { useCounterStore } from '/src/store/index.js'
+import { storeToRefs } from 'pinia'
 
-const 
+const store = useCounterStore()
+const { count } = storeToRefs(store)
+console.log(count, count.value)
 </script>
 
 <style lang="scss" scoped></style>

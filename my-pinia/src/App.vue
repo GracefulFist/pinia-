@@ -3,13 +3,29 @@
 </template>
 
 <script setup>
-import {} from 'vue'
-import { useCounterStore } from '/src/store/index.js'
-import { storeToRefs } from 'pinia'
+import { watch } from 'vue'
+import { usePersonStore } from '/src/store'
 
-const store = useCounterStore()
-const { count } = storeToRefs(store)
-console.log(count, count.value)
+const person = usePersonStore()
+
+person.$subscribe((mutations, state) => {
+  console.log(mutations.type, mutations.storeId, mutations)
+})
+setTimeout(() => {
+  person.$patch({
+    name: '小布',
+    age: 12,
+  })
+}, 3000)
+setTimeout(() => {
+  person.$patch({
+    name: '小',
+    age: 122,
+  })
+}, 6000)
+watch(person, (cur, old) => {
+  console.log({ cur })
+})
 </script>
 
 <style lang="scss" scoped></style>

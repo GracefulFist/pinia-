@@ -1,32 +1,18 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 
-export const useCounterStore = defineStore('counter', {
-  state: () => {
+export const usePersonStore = defineStore('person', {
+  state() {
     return {
-      count: 0,
-      name: 'Xiao Zhang',
+      // 介绍个人信息
+      name: '小松',
+      age: 23,
+      height: 178,
+      hobby: ['打羽毛球', '爱吃甜食', '喜欢洗脚'],
+      family: {
+        father: '大松',
+        mather: '大木',
+        sister: '二松',
+      },
     }
   },
-  getters: {
-    // 这个基本没有发生变化
-    doubleCount(state) {
-      state.count = state.count * 2
-    },
-  },
-  actions: {
-    // 这个可以通过 this 直接的就访问到state中的值
-    increment() {
-      this.count++
-    },
-  },
 })
-// export const useCounterStore = defineStore('counter', () => {
-//   const count = ref(0)
-//   const name = ref('小张')
-//   const doubleCount = computed(() => count.value * 2)
-//   function increment() {
-//     count.value++
-//   }
-//   return { count, name, doubleCount, increment }
-// })

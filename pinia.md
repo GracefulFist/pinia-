@@ -372,3 +372,124 @@ export default {
 }
 ```
 
+# 2.getters 的详解
+
+getters 的定义？如何去书写 getters？
+
+在 Options API 中：
+
+```js
+import { defineStore } from 'pinia'
+
+export const usePersonStore = defineStore( 'person' , {
+    state(){
+        return {
+            age: 23
+        }
+    },
+    getters:{
+        doubleAge : (state) => state.age * 2
+    }
+} )
+```
+
+在 composition API 中：
+
+```js
+import { defineStore } from 'pinia'
+import { ref , computed } from 'vue'
+
+export const usePersonStore = defineStore( 'person' , ()=>{
+    const age = ref(23)
+    const doubleAge = computed( () => age.value * 2 )
+    return {
+        age,
+        doubleAge
+    }
+})
+```
+
+大部分的时候，在 getters 中，我们一般只使用 state 中的属性即可满足我们的工作需求，但我们也可以会遇到使用 getters 中其它的属性（在 options 中写法可能会复杂一些，但在 composition API 中写法可能更加的灵活一些）。
+
+在 Options API 中，在 getters 中访问其它 getters 的话需要借助 this，并且 getters 的不能是一个 箭头函数(arrow function)：
+
+```js
+import { defineStore } from 'pinia'
+
+export const usePersonStore = defineStore('person', {
+  state: () => {
+    return {
+      name: '小张',
+      clickCount: 23,
+    }
+  },
+  getters: {
+    doubleClickCount: (state) => state.clickCount * 2,
+    getClickInfo(state) {
+      // 此时的 this 为 当前的 store 实例
+      return console.log(
+        `${this.name}一共点击了${state.clickCount},双击了${this.doubleClickCount}`
+      )
+    },
+  },
+})
+```
+
+getters 在组件中的使用，跟直接使用 state 无异。
+
+```vue
+<script>
+    import { usePersonStore } from '/src/store'
+
+    const person = usePersonStore()
+    person.getClickInfo
+</script>
+<template>
+    <p>Double count is {{ store.doubleCount }}</p>
+</tempale>
+```
+
+## Accessing other getters[#](https://pinia.vuejs.org/core-concepts/getters.html#accessing-other-getters)
+
+As with computed properties, you can combine multiple getters. Access any other getter via `this`. Even if you are not using TypeScript, you can hint your IDE for types with the [JSDoc](https://jsdoc.app/tags-returns.html):
+
+```vue
+export const useCounterStore = defineStore('counter', {
+  state: () => ({
+    count: 0,
+  }),
+  getters: {
+    // type is automatically inferred because we are not using `this`
+    doubleCount: (state) => state.count * 2,
+    // here we need to add the type ourselves (using JSDoc in JS). We can also
+    // use this to document the getter
+    /**
+     * Returns the count value times two plus one.
+     *
+     * @returns {number}
+     */
+    doubleCountPlusOne() {
+      // autocompletion ✨
+      return this.doubleCount + 1
+    },
+  },
+})
+```
+
+向 getters 中传入参数
+
+​	getters 是一个计算属性，所以不可能向 getters 中传递任何的参数，但是我们可以向 getters 中 return 中书写一个函数，这就可以使getters 接收参数了
+
+```js
+export const useStore = defineStore('main', {
+  getters: {
+    getUserById: (state) => {
+      return (userId) => state.users.find((user) => user.id === userId)
+    },
+  },
+})
+```
+
+其它的语法：
+
+参考链接：https://pinia.vuejs.org/core-concepts/getters.html#without-setup
